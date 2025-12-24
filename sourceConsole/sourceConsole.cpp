@@ -11,39 +11,47 @@ std::string fileBasename(std::string path);
 std::list<std::string> findAllFiles(std::string path);
 
 
-int main() {
+int main(int argc, char* argv[]) {
 	std::fstream inStream;
 	std::fstream outStream;
 
-	std::string filePath{"C-git-commands.asc"};
 	std::string content {};
 	std::string secondLineContent {};
 	int lineCounter {};
 	std::regex rgx ("(\\[source,console\\])");
 	std::smatch match;
+	std::list<std::string> filePaths{};
 	std::string currentPath {};
 
 	std::regex rgx2 {};
-
 	std::smatch match2;
 
-	std::cout << "Input the .asc file to read from\n\n";
-	std::cin >> filePath;
-	
-	auto pathOfFiles = findAllFiles(filePath);
+	std::string homeDir = getenv("HOME");
+	std::string resultsDir = "/results/sourceConsoleRes";
+	std::string resultsDirPath = homeDir + resultsDir + SUFFIX_TYPE + "/";
 
-	for(const auto& path : pathOfFiles) {
+	if(argc < 2)
+		std::cerr << "Error! No input from the user\n";
+	std::string filePath = argv[1];
 
-		std::cout << path << '\n';
-	
-		// std::ifstream fileReader(filePath);
+	if(!fs::exists(resultsDirPath)) {
+		if(!fs::create_directories(resultsDirPath)) {
+			std::cerr << "Failed to create the ~/Desktop/diff_check_ directory\n";
+		}
+	}
+
+	filePaths = findAllFiles(filePath);
+
+	for(const auto& path : filePaths) {
+
+		std::cout << path << '\n';	
 		inStream.open(path, std::ios_base::in);
 	
 		std::string filename = fileBasename(path);
 		std::cout << "the name of the file is: " << filename << "\n\n";
 	
 		if(inStream.is_open()) {
-			currentPath = "/home/marinos/Desktop/diff_check_en/results_" + filename + "_en.txt";
+			currentPath = resultsDirPath + filename + SUFFIX_TYPE + ".txt";
 			outStream.open(currentPath, std::ios_base::app);
 			while(std::getline(inStream, content)){
 				// if (check) {
@@ -70,17 +78,19 @@ int main() {
 							break;
 						}
 					}
-					// std::cout << "\n\n";
 					outStream << std::endl;
-					// outStream << "File " << filename << "doesn't contain any [source, console] line" << std::endl;
-					
-				}
-				if (fs::file_size(fs::path(currentPath)) == 0) {
-					outStream << "File: " << filename << ", doesn't contain any [source, console] line" << std::endl;
-					// fs::remove(fs::path(currentPath)); //previous logic, was to not keep it.s
-				}
+
+				} 
 			}
-			outStream.close();	
+			
+			if (fs::file_size(fs::path(currentPath)) == 0) {
+				outStream << "File: " << filename << ", doesn't contain any [source, console] line" << std::endl;
+				// fs::remove(fs::path(currentPath)); //previous logic, was to not keep it.s
+			}
+
+			outStream.close();
+			inStream.close();
+
 		} else {
 			std::cout << "The file doesn't exists\n\n";
 		}
