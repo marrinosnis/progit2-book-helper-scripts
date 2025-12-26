@@ -7,8 +7,8 @@
 
 namespace fs = std::filesystem;
 
-std::string fileBasename(std::string path);
 std::list<std::string> findAllFiles(std::string path);
+std::string fileBasename(std::string path);
 
 
 int main(int argc, char* argv[]) {
@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 	std::fstream outStream;
 
 	std::string content {};
-	std::string secondLineContent {};
+	std::string lineOfDashes {};
 	int lineCounter {};
 	std::regex rgx ("(\\[source,console\\])");
 	std::smatch match;
@@ -25,13 +25,11 @@ int main(int argc, char* argv[]) {
 
 	std::regex rgx2 {};
 	std::smatch match2;
-
-	std::string homeDir = getenv("HOME");
-	std::string resultsDir = "/results/sourceConsoleRes";
-	std::string resultsDirPath = homeDir + resultsDir + SUFFIX_TYPE + "/";
+	std::string resultsDir = "/allSourceConsoleFiles/sourceConsoleResFiles";
+	std::string resultsDirPath = PROGIT2_RESULTS_DIR + resultsDir + SUFFIX_TYPE + "/";
 
 	if(argc < 2)
-		std::cerr << "Error! No input from the user\n";
+		std::cerr << "\nError! No input from the user\n";
 	std::string filePath = argv[1];
 
 	if(!fs::exists(resultsDirPath)) {
@@ -48,27 +46,22 @@ int main(int argc, char* argv[]) {
 		inStream.open(path, std::ios_base::in);
 	
 		std::string filename = fileBasename(path);
-		std::cout << "the name of the file is: " << filename << "\n\n";
+		std::cout << "The name of the file is: " << filename << "\n";
 	
 		if(inStream.is_open()) {
-			currentPath = resultsDirPath + filename + SUFFIX_TYPE + ".txt";
+			currentPath = resultsDirPath + filename + ".txt";
 			outStream.open(currentPath, std::ios_base::app);
-			while(std::getline(inStream, content)){
-				// if (check) {
-				// 	outStream << content << "\n\n\n\n";
-				// 	check = false;	
-				// }
+			while(std::getline(inStream, content)) {
 				lineCounter++;
 				if(std::regex_match(content, match, rgx)) {
 					std::cout <<  match[0] << '\n';
 					outStream << match[0] << std::endl;
-	
-					std::getline(inStream, secondLineContent); //store exactly the next line of content to the secondLineContent variable
-					// std::cout << secondLineContent << '\n';  //prints the "----"
-					outStream << secondLineContent << '\n';
-	
-					rgx2 = secondLineContent;
-	
+
+					std::getline(inStream, lineOfDashes); // stores exactly the next line of content, which is the opening dashes "------" 
+					outStream << lineOfDashes << '\n';    // to the lineOfDashes variable, in order to be able to search, based on it,
+														  // the closing pair of dashes "------"
+					rgx2 = lineOfDashes;
+
 					while(std::getline(inStream, content)){
 						std::cout << content << "\n";
 						outStream << content << '\n';
@@ -101,21 +94,7 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
-std::string fileBasename(std::string path){
-	std::string temp {path.substr(path.find_last_of("//") + 1)};
-	
-	return temp.substr(0, temp.find_last_of("."));
-}
-
 std::list<std::string> findAllFiles(std::string parentFolder) {
-	// std::list<std::string> filesPath{};
-
-	// for (const auto &entry : fs::directory_iterator(path)) {
-	// 	// std::cout << entry.path() << std::endl;
-	// 	filesPath.push_back(entry.path());
-	// }
-
-	// return filesPath;
 
 	std::list<std::string> filesPath{};
 	std::string ASCSuffix {".asc"};
@@ -133,4 +112,9 @@ std::list<std::string> findAllFiles(std::string parentFolder) {
 
 	std::cout << "\n\nThe total number of .asc files is: " << counter << '\n';
 	return filesPath;
+}
+
+std::string fileBasename(std::string path){
+	std::string temp {path.substr(path.find_last_of("//") + 1)};
+	return temp.substr(0, temp.find_last_of("."));
 }

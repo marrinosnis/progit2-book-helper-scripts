@@ -18,6 +18,10 @@ target_sources(${TARGET_NAME} PRIVATE
     "${CMAKE_SOURCE_DIR}/sourceConsole.cpp"
 )
 
+target_compile_definitions(${TARGET_NAME} PUBLIC
+	PROGIT2_RESULTS_DIR="$ENV{HOME}/progit2Results"
+)
+
 
 if(GREEK_VER)
 	target_compile_definitions(${TARGET_NAME} PUBLIC

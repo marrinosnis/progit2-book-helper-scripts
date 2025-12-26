@@ -15,11 +15,11 @@ endif()
 add_executable(${TARGET_NAME})
 
 target_sources(${TARGET_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/findHttpLinks.cpp
+    ${CMAKE_SOURCE_DIR}/findHttpLinks.cpp
 )
 
 target_compile_definitions(${TARGET_NAME} PUBLIC
-	ASC_FILES_RESULTS_DIR="$ENV{HOME}/progit2Results"
+	PROGIT2_RESULTS_DIR="$ENV{HOME}/progit2Results"
 )
 
 if(GREEK_VER)

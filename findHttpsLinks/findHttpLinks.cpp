@@ -22,11 +22,11 @@ int main(int argc, char* argv[]) {
 	std::list<std::string> filePaths{};
 	std::string currentPath{};
 	int filesThatMatchTheRequirement {0};
-	std::string allHttpsASCResFiles {"/allHttpsASCResFiles/httpsResFiles"};
-	allHttpsASCResFiles = ASC_FILES_RESULTS_DIR + allHttpsASCResFiles + SUFFIX_TYPE  + "/";
+	std::string allHttpsASCResFiles {"/allHttpsASCFiles/httpsResFiles"};
+	allHttpsASCResFiles = PROGIT2_RESULTS_DIR + allHttpsASCResFiles + SUFFIX_TYPE  + "/";
 
 	std::string listAllASCFiles = {"/allASCFiles/listOfAllASCFiles"};
-	listAllASCFiles = ASC_FILES_RESULTS_DIR + listAllASCFiles + SUFFIX_TYPE;
+	listAllASCFiles = PROGIT2_RESULTS_DIR + listAllASCFiles + SUFFIX_TYPE;
 
 	if(argc < 2)
 		std::cerr << "\nError! No input from the user\n";
