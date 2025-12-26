@@ -18,16 +18,16 @@ target_sources(${TARGET_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/findHttpLinks.cpp
 )
 
+target_compile_definitions(${TARGET_NAME} PUBLIC
+	ASC_FILES_RESULTS_DIR="$ENV{HOME}/progit2Results"
+)
+
 if(GREEK_VER)
 	target_compile_definitions(${TARGET_NAME} PUBLIC
-		#FILE_OF_ALL_ASC_FILES="/home/runner/results/check_gr/allAscFiles_gr.txt"
-		FILE_OF_ALL_ASC_FILES="/home/marinos/Desktop/progit2-book-helper-scripts/findHttpsLinks/results/check_gr/allAscFiles_gr.txt"
 		SUFFIX_TYPE="_gr"
 	)
 else()
 	target_compile_definitions(${TARGET_NAME} PUBLIC
-	    	#FILE_OF_ALL_ASC_FILES="/home/runner/results/check_en/allAscFiles_en.txt"
-	    	FILE_OF_ALL_ASC_FILES="/home/marinos/Desktop/progit2-book-helper-scripts/findHttpsLinks/results/check_en/allAscFiles_en.txt"
 		SUFFIX_TYPE="_en"
 	)
 endif()
