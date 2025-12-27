@@ -16,11 +16,12 @@ int main(int argc, char* argv[]) {
 	std::fstream outStream;
 
 	std::string content {};
-	int lineCounter {1};;
+	int lineCounter {};
 	std::regex rgx (R"(https:\/\/\S+)");
 	std::smatch match;
 	std::list<std::string> filePaths{};
 	std::string currentPath{};
+	std::string filename {};
 	int filesThatMatchTheRequirement {0};
 	std::string allHttpsASCResFiles {"/allHttpsASCFiles/httpsResFiles"};
 	allHttpsASCResFiles = PROGIT2_RESULTS_DIR + allHttpsASCResFiles + SUFFIX_TYPE  + "/";
@@ -52,7 +53,7 @@ int main(int argc, char* argv[]) {
 
 	filePaths = findAllFilesAndInSubdirectories(filePath);
 	
-	outStream.open(listAllASCFiles, std::ios_base::app);
+	outStream.open(listAllASCFiles, std::ios_base::out);
 	outStream << filePaths;
 	outStream.close();
 
@@ -61,29 +62,32 @@ int main(int argc, char* argv[]) {
 
 		inStream.open(path, std::ios_base::in);
 
-		std::string filename = fileBasename(path);
+		filename = fileBasename(path);
 
-		std::cout << "THE NAME OF THE FILE IS: " << filename << "\n";
+		std::cout << "THE NAME OF THE FILE IS: " << filename << '\n';
 
 		if(inStream.is_open()) {
 			/*SUFFIX_OF_FILE defines the type of the extension, if it will be _en for english or _gr for greek*/
 			currentPath = allHttpsASCResFiles + filename + ".txt";  //filename changes all the time, in the loop
-			outStream.open(fs::path(currentPath), std::ios_base::app);
-			lineCounter = 1;
+			outStream.open(fs::path(currentPath), std::ios_base::out);
 			while(std::getline(inStream, content)) {
+				lineCounter++;
 				if(std::regex_search(content, match, rgx)) {
 					// std::cout << "The match prefix is: " << match.prefix() << '\n';
 					// std::cout << "The match str is : " << match.str() << '\n';
 					outStream << match.str() << " \tat line " << lineCounter << '\n' << std::endl;
 				}
-				lineCounter++;
 			}
 			if (fs::file_size(fs::path(currentPath)) == 0) {
 				// outStream << "File " << filename << " doesn't contain any http link";
 				fs::remove(fs::path(currentPath)); //previous logic, was to not keep it and remove the file
 			}
+
+			lineCounter = 0;
+
 			outStream.close();
 			inStream.close();
+
 		} else {
 			std::cout << "The file doesn't exists\n";
 		}
@@ -115,7 +119,6 @@ std::list<std::string> findAllFilesAndInSubdirectories(std::string parentFolder)
 
 std::string fileBasename(std::string path){
 	std::string temp {path.substr(path.find_last_of("//") + 1)};
-	
 	return temp.substr(0, temp.find_last_of("."));
 }
 

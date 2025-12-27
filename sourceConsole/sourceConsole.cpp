@@ -20,9 +20,9 @@ int main(int argc, char* argv[]) {
 	int lineCounter {};
 	std::regex rgx ("(\\[source,console\\])");
 	std::smatch match;
-	std::list<std::string> filePaths{};
+	std::list<std::string> filesPaths{};
 	std::string currentPath {};
-
+	std::string filename {};
 	std::regex rgx2 {};
 	std::smatch match2;
 	std::string resultsDir = "/allSourceConsoleFiles/sourceConsoleResFiles";
@@ -38,19 +38,19 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	filePaths = findAllFiles(filePath);
+	filesPaths = findAllFiles(filePath);
 
-	for(const auto& path : filePaths) {
+	for(const auto& path : filesPaths) {
 
 		std::cout << path << '\n';	
 		inStream.open(path, std::ios_base::in);
 	
-		std::string filename = fileBasename(path);
-		std::cout << "The name of the file is: " << filename << "\n";
+		filename = fileBasename(path);
+		std::cout << "The name of the file is: " << filename << '\n';
 	
 		if(inStream.is_open()) {
 			currentPath = resultsDirPath + filename + ".txt";
-			outStream.open(currentPath, std::ios_base::app);
+			outStream.open(currentPath, std::ios_base::out);
 			while(std::getline(inStream, content)) {
 				lineCounter++;
 				if(std::regex_match(content, match, rgx)) {
@@ -72,7 +72,6 @@ int main(int argc, char* argv[]) {
 						}
 					}
 					outStream << std::endl;
-
 				} 
 			}
 			
@@ -80,6 +79,8 @@ int main(int argc, char* argv[]) {
 				outStream << "File: " << filename << ", doesn't contain any [source, console] line" << std::endl;
 				// fs::remove(fs::path(currentPath)); //previous logic, was to not keep it.s
 			}
+
+			lineCounter = 0;
 
 			outStream.close();
 			inStream.close();
