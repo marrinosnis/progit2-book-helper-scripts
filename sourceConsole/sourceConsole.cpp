@@ -42,7 +42,6 @@ int main(int argc, char* argv[]) {
 
 	for(const auto& path : filesPaths) {
 
-		std::cout << path << '\n';	
 		inStream.open(path, std::ios_base::in);
 	
 		filename = fileBasename(path);
