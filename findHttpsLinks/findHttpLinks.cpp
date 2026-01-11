@@ -12,6 +12,7 @@ std::string fileBasename(std::string path);
 std::fstream& operator<<(std::fstream& COUT, const std::list<std::string>& filesPath);
 
 int main(int argc, char* argv[]) {
+	
 	std::fstream inStream;
 	std::fstream outStream;
 

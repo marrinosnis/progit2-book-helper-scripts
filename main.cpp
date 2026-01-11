@@ -1,36 +1,29 @@
+#include "findHttpsLinks/FindHttpsLinks.h"
+
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <regex>
-#include <list>
-#include <filesystem>
 
 namespace fs = std::filesystem;
-
-std::list<std::string> findAllFilesAndInSubdirectories(std::string parentFolder);
-std::string fileBasename(std::string path);
 
 int main(int argc, char* argv[]) {
 
 	std::fstream inStream;
 	std::fstream outStream;
 
-	std::list<std::string> filePaths{};
 	std::string content {};
-	std::string currentPath {};
-	std::string filename {};
-	std::string currentFile {};
 	int lineCounter {};
 	std::regex rgx ("<<ch.*#.*>>");
 	std::smatch match;
-
+	std::list<std::string> filePaths{};
+	std::string currentPath {};
+	std::string filename {};
 	std::string allChapterReferences {"/allChapterReferences/chapterResFiles"};
 	allChapterReferences = PROGIT2_RESULTS_DIR + allChapterReferences + SUFFIX_TYPE + "/";
-	
+
 	if(argc < 2) {
 		std::cerr << "\nError! No input from the user\n";
 	}
-	
+
 	std::cout << "The type of the file is " << SUFFIX_TYPE << std::endl;
 
 	std::string filePath = argv[1];
@@ -44,15 +37,20 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	filePaths = findAllFilesAndInSubdirectories(filePath);
+	// here is called the constructor of the class. In the constructor I have to pass
+	// the 2 values of the results directory, and the regex to be used to search.
+	FindHttpsLinks findObj("allChapterReferences/chapterResFiles", rgx);
+	filePaths = findObj.findAllFiles(filePath);
+
+	findObj.findAndSearchFiles(filePaths);
 
 	for(const std::string& path : filePaths) {
-		
+
 		inStream.open(path, std::ios_base::in);
 
-		filename = fileBasename(path);
+		filename = findObj.fileBasename(path);
 		std::cout << "The name of the file is: " << filename << '\n';
-		
+
 		if(inStream.is_open()) {
 			currentPath = allChapterReferences + filename + ".txt";
 			outStream.open(fs::path(currentPath), std::ios_base::out);
