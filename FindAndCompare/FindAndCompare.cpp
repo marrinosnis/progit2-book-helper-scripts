@@ -1,8 +1,9 @@
-#include "FindHttpsLinks.h"
+#include "FindAndCompare.h"
 
+namespace fs = std::filesystem;
 
-FindHttpsLinks::FindHttpsLinks(std::string diForResults = "", std::string regexForSearch = "") {
-	if(!dirForResults.empty() && !regexForSearch.empty()) {
+FindAndCompare::FindAndCompare(std::regex regexForSearch, std::string dirForResults) {
+	if(!dirForResults.empty()) {
 		resultsDir = dirForResults;
 		rgx = regexForSearch;
 	} else {
@@ -10,15 +11,14 @@ FindHttpsLinks::FindHttpsLinks(std::string diForResults = "", std::string regexF
 	}
 }
 
-FindHttpsLinks::~FindHttpsLinks(){}
+FindAndCompare::~FindAndCompare(){}
 
-
-void FindHttpsLinks::findAndSearchFiles(std::list<std::string> filePaths) {
+void FindAndCompare::findAndSearchFiles(std::list<std::string> filePaths) {
 
 	for(const std::string& path : filePaths) {
 		inStream.open(path, std::ios_base::in);
 
-		filename = fileBase(path);
+		filename = fileBasename(path);
 		std::cout << "The name of the file is: " << filename << '\n';
 
 		if(inStream.is_open()) {
@@ -40,13 +40,13 @@ void FindHttpsLinks::findAndSearchFiles(std::list<std::string> filePaths) {
 
 		} else {
 			std::cout << "The file doesn't exists\n";
+		}
 	}
 }
 
+std::list<std::string> FindAndCompare::findAllFiles(std::string parentFolder) {
 
-std::list<std::string> findAllFiles(std::string parentFolder) {
-
-	std::list(std::string> filesPath{};
+	std::list<std::string> filesPath{};
 	std::string ASCSuffix {".asc"};
 	int counter {0};
 
@@ -64,7 +64,7 @@ std::list<std::string> findAllFiles(std::string parentFolder) {
 	return filesPath;
 }
 
-std::string FindHttpsLinks::fileBasename(std::string path) {
+std::string FindAndCompare::fileBasename(std::string path) {
 	std::string temp {path.substr(path.find_last_of("//") + 1)};
 	return temp.substr(0, temp.find_last_of("."));
 }

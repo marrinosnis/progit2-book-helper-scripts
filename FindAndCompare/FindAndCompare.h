@@ -2,15 +2,17 @@
 #include <list>
 #include <filesystem>
 #include <fstream>
+#include <regex>
+#include <iostream>
 
-
-class FindHttpsLinks {
+class FindAndCompare {
 
 private:
 
     std::string content {};
     int lineCounter {};
     std::regex rgx {};
+    std::smatch match;
     std::list<std::string> filePaths{};
     std::string currentPath {};
     std::string filename {};
@@ -21,9 +23,8 @@ private:
 	std::fstream outStream;
 
 public:
-    FindHttpsLinks(std::string dirForResults = "", std::regex regexForSearch = "");
-	~FindHttpsLinks(){}
-
+    FindAndCompare(std::regex regexForSearch, std::string dirForResults = "");
+	~FindAndCompare();
 
 	std::list<std::string> findAllFiles(std::string parentFolder);
 	std::string fileBasename(std::string path);

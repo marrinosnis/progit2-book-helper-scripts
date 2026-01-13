@@ -127,3 +127,4 @@ std::fstream& operator<<(std::fstream& COUT, const std::list<std::string>& files
 		COUT << i << '\n';
 	return COUT;
 }
+

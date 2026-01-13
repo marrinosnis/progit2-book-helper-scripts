@@ -1,32 +1,38 @@
-#include "findHttpsLinks/FindHttpsLinks.h"
-
-#include <iostream>
-#include <fstream>
+#include <FindAndCompare.h>  //also includes <iostream> and <fstream>
+#include <exception>
 
 namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
 
-	std::fstream inStream;
-	std::fstream outStream;
+	// std::fstream inStream;
+	// std::fstream outStream;
 
-	std::string content {};
-	int lineCounter {};
+	// std::string content {};
+	// int lineCounter {};
 	std::regex rgx ("<<ch.*#.*>>");
-	std::smatch match;
+	// std::smatch match;
+	std::string filePath{};
 	std::list<std::string> filePaths{};
-	std::string currentPath {};
-	std::string filename {};
+	// std::string currentPath {};
+	// std::string filename {};
 	std::string allChapterReferences {"/allChapterReferences/chapterResFiles"};
-	allChapterReferences = PROGIT2_RESULTS_DIR + allChapterReferences + SUFFIX_TYPE + "/";
+	allChapterReferences = PROGIT2_RESULTS_DIR + allChapterReferences + "_en/";
 
-	if(argc < 2) {
-		std::cerr << "\nError! No input from the user\n";
+	try{
+		if(argc < 2) {
+			throw std::logic_error("Error! No input from the user");
+		}
+
+		filePath = argv[1];
+
+	} catch (std::logic_error& e) {
+		std::cerr << "Error code: " << e.what() << ' ';
+		exit(1);
 	}
 
-	std::cout << "The type of the file is " << SUFFIX_TYPE << std::endl;
+	// std::cout << "The type of the file is " << SUFFIX_TYPE << std::endl;
 
-	std::string filePath = argv[1];
 
 	std::string directory = fs::path(allChapterReferences).parent_path().string();
 	std::cout << "The parent path is: " << directory << '\n';
@@ -39,42 +45,42 @@ int main(int argc, char* argv[]) {
 
 	// here is called the constructor of the class. In the constructor I have to pass
 	// the 2 values of the results directory, and the regex to be used to search.
-	FindHttpsLinks findObj("allChapterReferences/chapterResFiles", rgx);
-	filePaths = findObj.findAllFiles(filePath);
-
+	FindAndCompare findObj(rgx, "allChapterReferences/chapterResFiles");
+	findObj.findAllFiles(filePath);
 	findObj.findAndSearchFiles(filePaths);
 
-	for(const std::string& path : filePaths) {
 
-		inStream.open(path, std::ios_base::in);
+	// for(const std::string& path : filePaths) {
 
-		filename = findObj.fileBasename(path);
-		std::cout << "The name of the file is: " << filename << '\n';
+	// 	inStream.open(path, std::ios_base::in);
 
-		if(inStream.is_open()) {
-			currentPath = allChapterReferences + filename + ".txt";
-			outStream.open(fs::path(currentPath), std::ios_base::out);
-			while(std::getline(inStream, content)){
-				lineCounter++;
-				if(std::regex_search(content, match, rgx)){
-					// std::cout << "The match is equal to " << match.str() << " at line " << lineCounter << "\n\n";
-					outStream << match.str() << " at line " << lineCounter << std::endl;
-				}
-			}
-			if (fs::file_size(fs::path(currentPath)) == 0) {
-				// outStream << "File " << filename << " doesn't contain any http link";
-				fs::remove(fs::path(currentPath)); //previous logic, was to not keep it and remove the file
-			}
+	// 	filename = findObj.fileBasename(path);
+	// 	std::cout << "The name of the file is: " << filename << '\n';
 
-			lineCounter = 0 ;
+	// 	if(inStream.is_open()) {
+	// 		currentPath = allChapterReferences + filename + ".txt";
+	// 		outStream.open(fs::path(currentPath), std::ios_base::out);
+	// 		while(std::getline(inStream, content)){
+	// 			lineCounter++;
+	// 			if(std::regex_search(content, match, rgx)){
+	// 				// std::cout << "The match is equal to " << match.str() << " at line " << lineCounter << "\n\n";
+	// 				outStream << match.str() << " at line " << lineCounter << std::endl;
+	// 			}
+	// 		}
+	// 		if (fs::file_size(fs::path(currentPath)) == 0) {
+	// 			// outStream << "File " << filename << " doesn't contain any http link";
+	// 			fs::remove(fs::path(currentPath)); //previous logic, was to not keep it and remove the file
+	// 		}
 
-			outStream.close();
-			inStream.close();
+	// 		lineCounter = 0 ;
 
-		} else {
-			std::cout << "The file doesn't exists\n\n";
-		}
-	}
+	// 		outStream.close();
+	// 		inStream.close();
+
+	// 	} else {
+	// 		std::cout << "The file doesn't exists\n\n";
+	// 	}
+	// }
 
 	return 0;
 }
